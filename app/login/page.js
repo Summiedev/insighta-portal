@@ -15,7 +15,7 @@ export default function LoginPage() {
     let cancelled = false;
     const bootstrapSession = async () => {
       try {
-        const response = await fetch(`${backend}/api/v1/auth/me`, {
+        const response = await fetch(`${backend}/auth/me`, {
           method: 'GET',
           credentials: 'include',
           headers: { 'x-api-version': '1' },
@@ -38,7 +38,7 @@ export default function LoginPage() {
 
   async function probeSession() {
     const backend = getBackendBaseUrl();
-    const response = await fetch(`${backend}/api/v1/auth/me`, {
+    const response = await fetch(`${backend}/auth/me`, {
       method: 'GET',
       credentials: 'include',
       headers: {
@@ -65,7 +65,7 @@ export default function LoginPage() {
         <p className="small">Sign in with GitHub to access the portal.</p>
 
         <div style={{ display: 'flex', justifyContent: 'center', gap: 12, marginTop: 18 }}>
-          <a className="button primary" style={{ minWidth: 200 }} href={`${baseUrl}/api/auth/github?client=browser`}>
+          <a className="button primary" style={{ minWidth: 200 }} href={`${baseUrl}/auth/github?client=browser`}>
             Continue with GitHub
           </a>
         </div>

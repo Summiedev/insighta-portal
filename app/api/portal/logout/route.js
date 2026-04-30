@@ -8,7 +8,7 @@ export async function POST(req) {
   }
 
   const cookie = req.headers.get('cookie') || '';
-  const { res, data } = await backendJson('/api/auth/logout', {
+  const { res, data } = await backendJson('/auth/logout', {
     method: 'POST',
     headers: {
       cookie,

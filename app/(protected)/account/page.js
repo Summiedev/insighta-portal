@@ -14,7 +14,7 @@ export default function AccountPage() {
       .find((v) => v.startsWith('portal_role='));
     if (currentRole) setRole(currentRole.split('=')[1] || 'analyst');
 
-    backendJson('/api/auth/me', { method: 'GET', credentials: 'include' })
+    backendJson('/auth/me', { method: 'GET', credentials: 'include' })
       .then(({ res, data }) => {
         if (res.ok && data.status === 'success') {
           setUser(data.data);
