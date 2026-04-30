@@ -4,10 +4,33 @@ import { useEffect, useState } from 'react';
 
 export default function LoginPage() {
   const [baseUrl, setBaseUrl] = useState('');
+  const [status, setStatus] = useState('');
 
   useEffect(() => {
     setBaseUrl(process.env.NEXT_PUBLIC_BACKEND_BASE_URL || 'http://localhost:3000');
   }, []);
+
+  async function probeSession() {
+    const backend = process.env.NEXT_PUBLIC_BACKEND_BASE_URL || 'http://localhost:3000';
+    const response = await fetch(`${backend}/api/auth/me`, {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        'x-api-version': '1',
+      },
+    });
+
+    if (response.status === 200) {
+      const payload = await response.json().catch(() => ({}));
+      const role = payload && payload.data && payload.data.role ? payload.data.role : 'analyst';
+      document.cookie = `portal_session=1; Path=/; SameSite=Strict`;
+      document.cookie = `portal_role=${role}; Path=/; SameSite=Strict`;
+      window.location.href = '/dashboard';
+      return;
+    }
+
+    setStatus('Session not detected yet. Complete GitHub auth and then click Continue.');
+  }
 
   return (
     <main className="container">
@@ -21,13 +44,10 @@ export default function LoginPage() {
           </a>
         </div>
 
-        <p className="small" style={{ marginTop: 24, color: '#666' }}>
-          You will be redirected to GitHub to authorize access.
-        </p>
-      </section>
-    </main>
-  );
-}
+        <div style={{ marginTop: 16 }}>
+          <button className="button secondary" type="button" onClick={probeSession}>
+            Check Session
+          </button>
         </div>
 
         {status ? <p className="small" style={{ marginTop: 12 }}>{status}</p> : null}
