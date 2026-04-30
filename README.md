@@ -46,9 +46,9 @@ This frontend consumes the existing Stage 3 backend APIs without changing backen
 
 ## Auth Flow (HTTP-only cookie backend auth)
 
-1. Login page links to backend `/api/auth/github?client=browser`.
+1. Login page links to backend `/auth/github?client=browser`.
 2. Backend performs GitHub OAuth PKCE and sets HTTP-only auth cookies.
-3. Portal probes backend `/api/auth/me` to confirm session and role.
+3. Portal probes backend `/auth/me` to confirm session and role.
 4. On success, portal sets lightweight UI session cookie for frontend route protection.
 
 Note: Authentication authority remains backend cookies; portal session cookie only gates frontend navigation.
@@ -67,15 +67,15 @@ The portal calls existing backend endpoints directly:
 - /api/profiles
 - /api/profiles/search
 - /api/profiles/export
-- /api/auth/github
-- /api/auth/logout
-- /api/auth/me
+- /auth/github
+- /auth/logout
+- /auth/me
 
 No filter engine duplication in frontend: the backend queryBuilder and nlParser remain source-of-truth.
 
 ## Role-aware UI Logic
 
-- Role detected by probing `/api/auth/me`:
+- Role detected by probing `/auth/me`:
   - role = `admin` or `analyst` from backend user payload
 - UI gating:
   - Analyst: dashboard and profile querying/search
@@ -103,5 +103,5 @@ No filter engine duplication in frontend: the backend queryBuilder and nlParser 
 
 - Stage 2: backend API only
 - Stage 3: browser portal with login, dashboard, advanced filters, profile detail, account, NL search, CSV export
-- Portal consumes backend `/api/*` endpoints instead of duplicating query logic
+- Portal consumes backend auth endpoints under `/auth/*` and profile endpoints under `/api/profiles*` instead of duplicating query logic
 - Cookie auth, CSRF protection, and role-aware UI are frontend additions only
