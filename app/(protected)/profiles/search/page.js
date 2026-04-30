@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import { getBackendBaseUrl } from '../../../../lib/config';
 
 function readRole() {
   if (typeof document === 'undefined') return 'analyst';
@@ -18,7 +19,7 @@ export default function ProfilesSearchPage() {
   const [meta, setMeta] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const backend = process.env.NEXT_PUBLIC_BACKEND_BASE_URL || 'http://localhost:3000';
+  const backend = getBackendBaseUrl();
 
   async function runSearch(e) {
     e.preventDefault();

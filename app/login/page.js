@@ -1,18 +1,44 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+import { getBackendBaseUrl } from '../../lib/config';
 
 export default function LoginPage() {
   const [baseUrl, setBaseUrl] = useState('');
   const [status, setStatus] = useState('');
 
   useEffect(() => {
-    setBaseUrl(process.env.NEXT_PUBLIC_BACKEND_BASE_URL || 'http://localhost:3000');
+    const backend = getBackendBaseUrl();
+    setBaseUrl(backend);
+
+    // Auto-bootstrap: if already logged in, redirect to dashboard
+    let cancelled = false;
+    const bootstrapSession = async () => {
+      try {
+        const response = await fetch(`${backend}/api/v1/auth/me`, {
+          method: 'GET',
+          credentials: 'include',
+          headers: { 'x-api-version': '1' },
+        });
+        if (response.ok && !cancelled) {
+          const payload = await response.json().catch(() => ({}));
+          const role = payload?.data?.role || 'analyst';
+          document.cookie = `portal_session=1; Path=/; SameSite=Strict`;
+          document.cookie = `portal_role=${role}; Path=/; SameSite=Strict`;
+          window.location.href = '/dashboard';
+        }
+      } catch (_err) {
+        // Ignore errors, stay on login page
+      }
+    };
+    
+    bootstrapSession();
+    return () => { cancelled = true; };
   }, []);
 
   async function probeSession() {
-    const backend = process.env.NEXT_PUBLIC_BACKEND_BASE_URL || 'http://localhost:3000';
-    const response = await fetch(`${backend}/api/auth/me`, {
+    const backend = getBackendBaseUrl();
+    const response = await fetch(`${backend}/api/v1/auth/me`, {
       method: 'GET',
       credentials: 'include',
       headers: {
