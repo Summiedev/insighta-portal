@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { getBackendBaseUrl } from '../../../../lib/config';
+import { backendJson } from '../../../../lib/backend';
 
 function readRole() {
   if (typeof document === 'undefined') return 'analyst';
@@ -19,15 +19,15 @@ export default function ProfilesSearchPage() {
   const [meta, setMeta] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const backend = getBackendBaseUrl();
-
   async function runSearch(e) {
     e.preventDefault();
     setLoading(true);
 
     const params = new URLSearchParams({ q: query, page: '1', limit: '10' });
-    const res = await fetch(`${backend}/api/v1/profiles/search?${params.toString()}`, { credentials: 'include' });
-    const payload = await res.json().catch(() => ({}));
+    const { res, data: payload } = await backendJson(`/api/v1/profiles/search?${params.toString()}`, {
+      method: 'GET',
+      credentials: 'include',
+    });
 
     setLoading(false);
     if (res.ok && payload.status === 'success') {
